@@ -313,6 +313,31 @@ def import_db2(folder_path, subject, rest_length_cap=999):
             }
 
 
+def import_db2_acc(folder_path, subject):
+    """Function for extracting acceleronmeter data from raw NinaiPro files for DB2.
+
+    Args:
+        folder_path (string): Path to folder containing raw mat files
+        subject (int): 1-40 which subject's data to import
+
+    Returns:
+        array: Raw accceleronmeter from each electrode
+    """
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E1_A1.mat')
+    data = sio.loadmat(cur_path)
+    acc = np.squeeze(np.array(data['acc']))
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E2_A1.mat')
+    data = sio.loadmat(cur_path)
+    acc = np.vstack((acc, np.array(data['acc'])))
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E3_A1.mat')
+    data = sio.loadmat(cur_path)
+    acc = np.vstack((acc, np.array(data['acc'])))
+
+    return acc
+
+
 def gen_split_balanced(rep_ids, nb_test, base=None):
     """Create a balanced split for training and testing based on repetitions (all reps equally tested + trained on) .
 

@@ -1,6 +1,14 @@
 # NINAPRO Utilities
 Functions for helping work with NINAPRO databases 1 and 2.
 
+Get:
+* Raw EMG
+    * Normalise
+    * Get Windows
+* Refined movement labels
+* Refined repetition labels
+* Accelerometer data (DB2 only, seperate function for memory usage reduction)
+
 Relevant data also included:
 * Number of subjects in database
 * Number of channels
@@ -98,6 +106,7 @@ subject = 7
 info_dict = db2_info()  # Get info
 
 # Get EMG, repetition and movement data, cap max length of rest data before and after each movement to 5 seconds
+# Capping occurs by reducing the size of repetition segments since splitting is based on repetition number
 data_dict = nina_helper.import_db2(db2_path, subject, rest_length_cap=5)
 
 # Create a random test - training split based on repetition number (specify a set to include)
