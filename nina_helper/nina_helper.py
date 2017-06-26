@@ -7,7 +7,130 @@ from sklearn.preprocessing import StandardScaler
 from itertools import combinations, chain
 
 
-def import_db1(folder_path, subject, rest_length_cap=5):
+def db1_info():
+    """Return relevant info on database 1.
+
+    Returns:
+        Dict: Useful information on database 1
+    """
+    # General Info
+    nb_subjects = 27
+    nb_channels = 10
+    nb_moves = 53  # 52 + rest
+    nb_reps = 10
+    fs = 100
+
+    # Labels
+    rep_labels = np.array(range(1, nb_reps + 1))
+    move_labels = np.array(range(1, nb_moves + 1))
+
+    # Male - Female
+    female = np.array([6, 8, 10, 14, 15, 20, 22])
+    male = np.array([1, 2, 3, 4, 6, 8, 10, 11, 12, 15, 16, 17, 18, 20, 22, 23, 24, 25, 26, 27])
+    female_ind = np.array([5, 7, 9, 13, 14, 19, 21])
+    male_ind = np.array([0, 1, 2, 3, 5, 7, 9, 10, 11, 14, 15, 16, 17, 19, 21, 22, 23, 24, 25, 26])
+
+    # Handedness
+    left_handed = np.array([14, 16])
+    right_handed = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15,
+                             17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27])
+    left_handed_ind = np.array([13, 15])
+    right_handed_ind = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26])
+
+    # Other Info (synced)
+    ages = np.array([31, 27, 22, 27, 27, 22, 28, 27, 23, 30, 28, 25, 27,
+                     29, 26, 29, 30, 29, 34, 26, 38, 35, 30, 26, 28, 40, 28])
+    heights = np.array([170, 170, 180, 183, 178, 163, 170, 164, 173, 160, 170, 185, 184,
+                        155, 162, 167, 175, 178, 173, 165, 178, 168, 180, 180, 180, 179, 185])
+    weights = np.array([75, 62, 85, 95, 75, 48, 60, 54, 63, 60, 67, 80, 85,
+                        54, 60, 67, 76, 68, 82, 54, 73, 65, 65, 65, 70, 66, 100])
+
+    return {'nb_subjects': nb_subjects,
+            'nb_channels': nb_channels,
+            'nb_moves': nb_moves,
+            'nb_reps': nb_reps,
+            'fs': fs,
+            'rep_labels': rep_labels,
+            'move_labels': move_labels,
+            'female': female,
+            'male': male,
+            'female_ind': female_ind,
+            'male_ind': male_ind,
+            'left_handed': left_handed,
+            'right_handed': right_handed,
+            'left_handed_ind': left_handed_ind,
+            'right_handed_ind': right_handed_ind,
+            'ages': ages,
+            'heights': heights,
+            'weights': weights,
+            }
+
+
+def db2_info():
+    """Return relevant info on database 2.
+
+    Returns:
+        Dict: Useful information on database 2
+    """
+    # General Info
+    nb_subjects = 27
+    nb_channels = 10
+    nb_moves = 53  # 52 + rest
+    nb_reps = 10
+    fs = 100
+
+    # Labels
+    rep_labels = np.array(range(1, nb_reps + 1))
+    move_labels = np.array(range(1, nb_moves + 1))
+
+    # Male - Female
+    female = np.array([4, 11, 14, 18, 19, 20, 22, 28, 35, 36, 38])
+    male = np.array([1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 13, 15, 16, 17, 21,
+                     23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 37, 39, 40])
+    female_ind = np.array([3, 10, 13, 17, 18, 19, 21, 27, 34, 35, 37])
+    male_ind = np.array([0, 1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 20,
+                         22, 23, 24, 25, 26, 28, 29, 30, 31, 32, 33, 36, 38, 39])
+
+    # Handedness
+    left_handed = np.array([4, 13, 22, 25, 26])
+    right_handed = np.array([1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20,
+                             21, 23, 24, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40])
+    left_handed_ind = np.array([3, 12, 21, 24, 25])
+    right_handed_ind = np.array([0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19,
+                                 20, 22, 23, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39])
+
+    # Other Info (synced)
+    ages = np.array([29, 29, 31, 30, 25, 35, 27, 45, 23, 34, 32, 29, 30, 30, 30, 34, 29, 30, 31,
+                     26, 32, 28, 25, 28, 31, 30, 29, 29, 27, 30, 29, 28, 25, 31, 24, 27, 34, 30, 31, 31])
+    heights = np.array([187, 183, 174, 154, 175, 172, 187, 173, 172, 173, 150, 184, 182, 173, 169, 173, 175, 169, 158,
+                        155, 170, 162, 170, 170, 168, 186, 170, 160, 171, 173, 185, 173, 183, 192, 170, 155, 190, 163,
+                        183, 173])
+    weights = np.array([75, 75, 69, 50, 70, 79, 92, 73, 63, 84, 54, 90, 70, 59, 58, 76, 70, 90, 52,
+                        52, 75, 54, 66, 73, 70, 90, 65, 61, 64, 68, 98, 72, 71, 78, 52, 44, 105, 62, 96, 65])
+
+    return {'nb_subjects': nb_subjects,
+            'nb_channels': nb_channels,
+            'nb_moves': nb_moves,
+            'nb_reps': nb_reps,
+            'fs': fs,
+            'rep_labels': rep_labels,
+            'move_labels': move_labels,
+            'female': female,
+            'male': male,
+            'female_ind': female_ind,
+            'male_ind': male_ind,
+            'left_handed': left_handed,
+            'right_handed': right_handed,
+            'left_handed_ind': left_handed_ind,
+            'right_handed_ind': right_handed_ind,
+            'ages': ages,
+            'heights': heights,
+            'weights': weights,
+            }
+
+
+def import_db1(folder_path, subject, rest_length_cap=999):
     """Function for extracting data from raw NinaiPro files for DB1.
 
     Args:
@@ -92,7 +215,7 @@ def import_db1(folder_path, subject, rest_length_cap=5):
             }
 
 
-def import_db2(folder_path, subject, rest_length_cap=5):
+def import_db2(folder_path, subject, rest_length_cap=999):
     """Function for extracting data from raw NinaiPro files for DB2.
 
     Args:
@@ -204,20 +327,22 @@ def gen_split_balanced(rep_ids, nb_test, base=None):
     nb_reps = rep_ids.shape[0]
     nb_splits = nb_reps
 
+    train_reps = np.zeros((nb_splits, nb_reps - nb_test,), dtype=int)
+    test_reps = np.zeros((nb_splits, nb_test), dtype=int)
+
     # Generate all possible combinations
     all_combos = combinations(rep_ids, nb_test)
     all_combos = np.fromiter(chain.from_iterable(all_combos), int)
     all_combos = all_combos.reshape(-1, nb_test)
-    all_combos = np.delete(all_combos, np.where(np.all(all_combos == base, axis=1))[0][0], axis=0)
-    all_combos_copy = all_combos
 
-    test_reps = np.zeros((nb_splits, nb_test), dtype=int)
     if base is not None:
         test_reps[0, :] = base
+        all_combos = np.delete(all_combos, np.where(np.all(all_combos == base, axis=1))[0][0], axis=0)
+        cur_split = 1
+    else:
+        cur_split = 0
 
-    train_reps = np.zeros((nb_splits, nb_reps - nb_test,), dtype=int)
-
-    cur_split = 1
+    all_combos_copy = all_combos
     reset_counter = 0
     while cur_split < (nb_splits):
         if reset_counter >= 10 or all_combos.shape[0] == 0:
@@ -225,8 +350,10 @@ def gen_split_balanced(rep_ids, nb_test, base=None):
             test_reps = np.zeros((nb_splits, nb_test), dtype=int)
             if base is not None:
                 test_reps[0, :] = base
+                cur_split = 1
+            else:
+                cur_split = 0
 
-            cur_split = 1
             reset_counter = 0
 
         randomIndex = np.random.randint(0, all_combos.shape[0])
@@ -266,15 +393,18 @@ def gen_split_rand(rep_ids, nb_test, nb_splits, base=None):
     all_combos = combinations(rep_ids, nb_test)
     all_combos = np.fromiter(chain.from_iterable(all_combos), int)
     all_combos = all_combos.reshape(-1, nb_test)
-    all_combos = np.delete(all_combos, np.where(np.all(all_combos == base, axis=1))[0][0], axis=0)
-
-    test_reps = np.zeros((nb_splits, nb_test), dtype=int)
-    if base is not None:
-        test_reps[0, :] = base
 
     train_reps = np.zeros((nb_splits, nb_reps - nb_test,), dtype=int)
+    test_reps = np.zeros((nb_splits, nb_test), dtype=int)
+    cur_split = 0
 
-    for i in range(1, nb_splits):
+    if base is not None:
+        test_reps[0, :] = base
+        train_reps[0, :] = np.setdiff1d(rep_ids, test_reps[0, :])
+        all_combos = np.delete(all_combos, np.where(np.all(all_combos == base, axis=1))[0][0], axis=0)
+        cur_split = 1
+
+    for i in range(cur_split, nb_splits):
         rand_idx = np.random.randint(all_combos.shape[0])
         test_reps[i, :] = all_combos[rand_idx, :]
         train_reps[i, :] = np.setdiff1d(rep_ids, test_reps[i, :])
