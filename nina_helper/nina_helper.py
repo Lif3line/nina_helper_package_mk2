@@ -215,6 +215,87 @@ def import_db1(folder_path, subject, rest_length_cap=999):
             }
 
 
+def import_db1_unrefined(folder_path, subject, rest_length_cap=999):
+    """Get the original repetition and stimulus information DB1 (repetition still aligned as rest-move-rest).
+
+    Args:
+        folder_path (string): Path to folder containing raw mat files
+        subject (int): 1-27 which subject's data to import
+        rest_length_cap (int, optional): The number of seconds of rest data to keep before/after a movement
+
+    Returns:
+        Dictionary: Unrefined repetition and movement labels, indices of where repetitions are
+            demarked and the number of repetitions with capped off rest data
+    """
+    fs = 100
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_A1_E1.mat')
+    data = sio.loadmat(cur_path)
+    rep = np.squeeze(np.array(data['repetition']))
+    move = np.squeeze(np.array(data['stimulus']))
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_A1_E2.mat')
+    data = sio.loadmat(cur_path)
+    rep = np.append(rep, np.squeeze(np.array(data['repetition'])))
+    move_tmp = np.squeeze(np.array(data['stimulus']))  # Fix for numbering
+    move_tmp[move_tmp != 0] += max(move)
+    move = np.append(move, move_tmp)
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_A1_E3.mat')
+    data = sio.loadmat(cur_path)
+    rep = np.append(rep, np.squeeze(np.array(data['repetition'])))
+    move_tmp = np.squeeze(np.array(data['stimulus']))  # Fix for numbering
+    move_tmp[move_tmp != 0] += max(move)
+    move = np.append(move, move_tmp)
+
+    move = move.astype('int8')  # To minimise overhead
+
+    # Label repetitions using new block style: rest-move-rest regions
+    move_regions = np.where(np.diff(move))[0]
+    rep_regions = np.zeros((move_regions.shape[0],), dtype=int)
+    nb_reps = int(round(move_regions.shape[0] / 2))
+    last_end_idx = int(round(move_regions[0] / 2))
+    nb_unique_reps = np.unique(rep).shape[0] - 1  # To account for 0 regions
+    nb_capped = 0
+    cur_rep = 1
+
+    rep = np.zeros([rep.shape[0], ], dtype=np.int8)  # Reset rep array
+    for i in range(nb_reps - 1):
+        rep_regions[2 * i] = last_end_idx
+        midpoint_idx = int(round((move_regions[2 * (i + 1) - 1] +
+                                  move_regions[2 * (i + 1)]) / 2)) + 1
+
+        trailing_rest_samps = midpoint_idx - move_regions[2 * (i + 1) - 1]
+        if trailing_rest_samps <= rest_length_cap * fs:
+            rep[last_end_idx:midpoint_idx] = cur_rep
+            last_end_idx = midpoint_idx
+            rep_regions[2 * i + 1] = midpoint_idx - 1
+
+        else:
+            rep_end_idx = (move_regions[2 * (i + 1) - 1] +
+                           int(round(rest_length_cap * fs)))
+            rep[last_end_idx:rep_end_idx] = cur_rep
+            last_end_idx = ((move_regions[2 * (i + 1)] -
+                             int(round(rest_length_cap * fs))))
+            rep_regions[2 * i + 1] = rep_end_idx - 1
+            nb_capped += 2
+
+        cur_rep += 1
+        if cur_rep > nb_unique_reps:
+            cur_rep = 1
+
+    end_idx = int(round((rep.shape[0] + move_regions[-1]) / 2))
+    rep[last_end_idx:end_idx] = cur_rep
+    rep_regions[-2] = last_end_idx
+    rep_regions[-1] = end_idx - 1
+
+    return {'rep': rep,
+            'move': move,
+            'rep_regions': rep_regions,
+            'nb_capped': nb_capped
+            }
+
+
 def import_db2(folder_path, subject, rest_length_cap=999):
     """Function for extracting data from raw NinaiPro files for DB2.
 
@@ -252,6 +333,7 @@ def import_db2(folder_path, subject, rest_length_cap=999):
     rep = np.append(rep, np.squeeze(np.array(data['repetition'])))
 
     # Movements number in non-logical pattern [0  1  2  4  6  8  9 16 32 40]
+    # Also note that for last file there is no 'rerepetition or 'restimulus'
     data['stimulus'][-1] = 0  # Fix for diffing
     data['stimulus'][np.where(data['stimulus'] == 1)] = 41
     data['stimulus'][np.where(data['stimulus'] == 2)] = 42
@@ -307,6 +389,97 @@ def import_db2(folder_path, subject, rest_length_cap=999):
 
     return {'emg': emg,
             'rep': rep,
+            'move': move,
+            'rep_regions': rep_regions,
+            'nb_capped': nb_capped
+            }
+
+
+def import_db2_unrefined(folder_path, subject, rest_length_cap=999):
+    """Get the original repetition and stimulus information DB1 (repetition still aligned as rest-move-rest).
+
+    Args:
+        folder_path (string): Path to folder containing raw mat files
+        subject (int): 1-27 which subject's data to import
+        rest_length_cap (int, optional): The number of seconds of rest data to keep before/after a movement
+
+    Returns:
+        Dictionary: Unrefined repetition and movement labels, indices of where repetitions are
+            demarked and the number of repetitions with capped off rest data
+    """
+    fs = 2000
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E1_A1.mat')
+    data = sio.loadmat(cur_path)
+    rep = np.squeeze(np.array(data['repetition']))
+    move = np.squeeze(np.array(data['stimulus']))
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E2_A1.mat')
+    data = sio.loadmat(cur_path)
+    rep = np.append(rep, np.squeeze(np.array(data['repetition'])))
+    move_tmp = np.squeeze(np.array(data['stimulus']))
+    move = np.append(move, move_tmp)  # Note no fix needed for this exercise
+
+    cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E3_A1.mat')
+    data = sio.loadmat(cur_path)
+    data['repetition'][-1] = 0  # Fix for diffing
+    rep = np.append(rep, np.squeeze(np.array(data['repetition'])))
+
+    # Movements number in non-logical pattern [0  1  2  4  6  8  9 16 32 40]
+    data['stimulus'][-1] = 0  # Fix for diffing
+    data['stimulus'][np.where(data['stimulus'] == 1)] = 41
+    data['stimulus'][np.where(data['stimulus'] == 2)] = 42
+    data['stimulus'][np.where(data['stimulus'] == 4)] = 43
+    data['stimulus'][np.where(data['stimulus'] == 6)] = 44
+    data['stimulus'][np.where(data['stimulus'] == 8)] = 45
+    data['stimulus'][np.where(data['stimulus'] == 9)] = 46
+    data['stimulus'][np.where(data['stimulus'] == 16)] = 47
+    data['stimulus'][np.where(data['stimulus'] == 32)] = 48
+    data['stimulus'][np.where(data['stimulus'] == 40)] = 49
+    move_tmp = np.squeeze(np.array(data['stimulus']))
+    move = np.append(move, move_tmp)
+
+    move = move.astype('int8')  # To minimise overhead
+
+    # Label repetitions using new block style: rest-move-rest regions
+    move_regions = np.where(np.diff(move))[0]
+    rep_regions = np.zeros((move_regions.shape[0],), dtype=int)
+    nb_reps = int(round(move_regions.shape[0] / 2))
+    last_end_idx = int(round(move_regions[0] / 2))
+    nb_unique_reps = np.unique(rep).shape[0] - 1  # To account for 0 regions
+    nb_capped = 0
+    cur_rep = 1
+
+    rep = np.zeros([rep.shape[0], ], dtype=np.int8)  # Reset rep array
+    for i in range(nb_reps - 1):
+        rep_regions[2 * i] = last_end_idx
+        midpoint_idx = int(round((move_regions[2 * (i + 1) - 1] +
+                                  move_regions[2 * (i + 1)]) / 2)) + 1
+
+        trailing_rest_samps = midpoint_idx - move_regions[2 * (i + 1) - 1]
+        if trailing_rest_samps <= rest_length_cap * fs:
+            rep[last_end_idx:midpoint_idx] = cur_rep
+            last_end_idx = midpoint_idx
+            rep_regions[2 * i + 1] = midpoint_idx - 1
+        else:
+            rep_end_idx = (move_regions[2 * (i + 1) - 1] +
+                           int(round(rest_length_cap * fs)))
+            rep[last_end_idx:rep_end_idx] = cur_rep
+            last_end_idx = ((move_regions[2 * (i + 1)] -
+                             int(round(rest_length_cap * fs))))
+            rep_regions[2 * i + 1] = rep_end_idx - 1
+            nb_capped += 2
+
+        cur_rep += 1
+        if cur_rep > nb_unique_reps:
+            cur_rep = 1
+
+    end_idx = int(round((rep.shape[0] + move_regions[-1]) / 2))
+    rep[last_end_idx:end_idx] = cur_rep
+    rep_regions[-2] = last_end_idx
+    rep_regions[-1] = end_idx - 1
+
+    return {'rep': rep,
             'move': move,
             'rep_regions': rep_regions,
             'nb_capped': nb_capped
