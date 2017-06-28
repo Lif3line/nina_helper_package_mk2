@@ -74,11 +74,11 @@ def db2_info():
         Dict: Useful information on database 2
     """
     # General Info
-    nb_subjects = 27
-    nb_channels = 10
-    nb_moves = 53  # 52 + rest
-    nb_reps = 10
-    fs = 100
+    nb_subjects = 40
+    nb_channels = 12
+    nb_moves = 50  # 40 + 9 force movements + rest
+    nb_reps = 6
+    fs = 2000
 
     # Labels
     rep_labels = np.array(range(1, nb_reps + 1))
