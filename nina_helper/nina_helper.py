@@ -721,3 +721,271 @@ def get_idxs(in_array, to_find):
     """
     targets = ([np.where(in_array == x) for x in to_find])
     return np.squeeze(np.concatenate(targets, axis=1))
+
+
+def db_info(db):
+    """Return relevant info on databases 1 and2.
+
+    Args:
+        db (int): Which database to get info on (1 or 2 currently)
+
+    Returns:
+        Dict: Useful information on selected database
+    """
+    if db == 1:
+        # General Info
+        nb_subjects = 27
+        nb_channels = 10
+        nb_moves = 53  # 52 + rest
+        nb_reps = 10
+        fs = 100
+
+        # Labels
+        rep_labels = np.array(range(1, nb_reps + 1))
+        move_labels = np.array(range(1, nb_moves + 1))
+
+        # Male - Female
+        female = np.array([6, 8, 10, 14, 15, 20, 22])
+        male = np.array([1, 2, 3, 4, 6, 8, 10, 11, 12, 15, 16, 17, 18, 20, 22, 23, 24, 25, 26, 27])
+        female_ind = np.array([5, 7, 9, 13, 14, 19, 21])
+        male_ind = np.array([0, 1, 2, 3, 5, 7, 9, 10, 11, 14, 15, 16, 17, 19, 21, 22, 23, 24, 25, 26])
+
+        # Handedness
+        left_handed = np.array([14, 16])
+        right_handed = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15,
+                                 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27])
+        left_handed_ind = np.array([13, 15])
+        right_handed_ind = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                     14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26])
+
+        # Other Info (synced)
+        ages = np.array([31, 27, 22, 27, 27, 22, 28, 27, 23, 30, 28, 25, 27,
+                         29, 26, 29, 30, 29, 34, 26, 38, 35, 30, 26, 28, 40, 28])
+        heights = np.array([170, 170, 180, 183, 178, 163, 170, 164, 173, 160, 170, 185, 184,
+                            155, 162, 167, 175, 178, 173, 165, 178, 168, 180, 180, 180, 179, 185])
+        weights = np.array([75, 62, 85, 95, 75, 48, 60, 54, 63, 60, 67, 80, 85,
+                            54, 60, 67, 76, 68, 82, 54, 73, 65, 65, 65, 70, 66, 100])
+    elif db == 2:
+        # General Info
+        nb_subjects = 40
+        nb_channels = 12
+        nb_moves = 50  # 40 + 9 force movements + rest
+        nb_reps = 6
+        fs = 2000
+
+        # Labels
+        rep_labels = np.array(range(1, nb_reps + 1))
+        move_labels = np.array(range(1, nb_moves + 1))
+
+        # Male - Female
+        female = np.array([4, 11, 14, 18, 19, 20, 22, 28, 35, 36, 38])
+        male = np.array([1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 13, 15, 16, 17, 21,
+                         23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 37, 39, 40])
+        female_ind = np.array([3, 10, 13, 17, 18, 19, 21, 27, 34, 35, 37])
+        male_ind = np.array([0, 1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 20,
+                             22, 23, 24, 25, 26, 28, 29, 30, 31, 32, 33, 36, 38, 39])
+
+        # Handedness
+        left_handed = np.array([4, 13, 22, 25, 26])
+        right_handed = np.array([1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20,
+                                 21, 23, 24, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40])
+        left_handed_ind = np.array([3, 12, 21, 24, 25])
+        right_handed_ind = np.array([0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19,
+                                     20, 22, 23, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39])
+
+        # Other Info (synced)
+        ages = np.array([29, 29, 31, 30, 25, 35, 27, 45, 23, 34, 32, 29, 30, 30, 30, 34, 29, 30, 31,
+                         26, 32, 28, 25, 28, 31, 30, 29, 29, 27, 30, 29, 28, 25, 31, 24, 27, 34, 30, 31, 31])
+        heights = np.array([187, 183, 174, 154, 175, 172, 187, 173, 172, 173, 150, 184, 182, 173, 169, 173, 175, 169,
+                            158, 155, 170, 162, 170, 170, 168, 186, 170, 160, 171, 173, 185, 173, 183, 192, 170, 155,
+                            190, 163, 183, 173])
+        weights = np.array([75, 75, 69, 50, 70, 79, 92, 73, 63, 84, 54, 90, 70, 59, 58, 76, 70, 90, 52,
+                            52, 75, 54, 66, 73, 70, 90, 65, 61, 64, 68, 98, 72, 71, 78, 52, 44, 105, 62, 96, 65])
+    else:
+        raise ValueError('db should be either 1 for database 1 or 2 for database 2')
+
+    return {'nb_subjects': nb_subjects,
+            'nb_channels': nb_channels,
+            'nb_moves': nb_moves,
+            'nb_reps': nb_reps,
+            'fs': fs,
+            'rep_labels': rep_labels,
+            'move_labels': move_labels,
+            'female': female,
+            'male': male,
+            'female_ind': female_ind,
+            'male_ind': male_ind,
+            'left_handed': left_handed,
+            'right_handed': right_handed,
+            'left_handed_ind': left_handed_ind,
+            'right_handed_ind': right_handed_ind,
+            'ages': ages,
+            'heights': heights,
+            'weights': weights,
+            }
+
+
+def import_subject(folder_path, subject, db, rest_length_cap=999):
+    """Function for extracting data from raw NinaiPro files for DB1.
+
+    Args:
+        folder_path (string): Path to folder containing raw mat files
+        subject (int): 1-27 which subject's data to import
+        rest_length_cap (int, optional): The number of seconds of rest data to keep before/after a movement
+        db (int): Which database to get info on (1 or 2 currently)
+
+    Returns:
+        Dictionary: Raw EMG data, corresponding repetition and movement labels, indices of where repetitions are
+            demarked and the number of repetitions with capped off rest data
+    """
+    if db == 1:
+        fs = 100
+
+        cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_A1_E1.mat')
+        data = sio.loadmat(cur_path)
+        emg = np.squeeze(np.array(data['emg']))
+        rep = np.squeeze(np.array(data['rerepetition']))
+        move = np.squeeze(np.array(data['restimulus']))
+
+        cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_A1_E2.mat')
+        data = sio.loadmat(cur_path)
+        emg = np.vstack((emg, np.array(data['emg'])))
+        rep = np.append(rep, np.squeeze(np.array(data['rerepetition'])))
+        move_tmp = np.squeeze(np.array(data['restimulus']))  # Fix for numbering
+        move_tmp[move_tmp != 0] += max(move)
+        move = np.append(move, move_tmp)
+
+        cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_A1_E3.mat')
+        data = sio.loadmat(cur_path)
+        emg = np.vstack((emg, np.array(data['emg'])))
+        rep = np.append(rep, np.squeeze(np.array(data['rerepetition'])))
+        move_tmp = np.squeeze(np.array(data['restimulus']))  # Fix for numbering
+        move_tmp[move_tmp != 0] += max(move)
+        move = np.append(move, move_tmp)
+
+        move = move.astype('int8')  # To minimise overhead
+
+        # Label repetitions using new block style: rest-move-rest regions
+        move_regions = np.where(np.diff(move))[0]
+        rep_regions = np.zeros((move_regions.shape[0],), dtype=int)
+        nb_reps = int(round(move_regions.shape[0] / 2))
+        last_end_idx = int(round(move_regions[0] / 2))
+        nb_unique_reps = np.unique(rep).shape[0] - 1  # To account for 0 regions
+        nb_capped = 0
+        cur_rep = 1
+
+        rep = np.zeros([rep.shape[0], ], dtype=np.int8)  # Reset rep array
+        for i in range(nb_reps - 1):
+            rep_regions[2 * i] = last_end_idx
+            midpoint_idx = int(round((move_regions[2 * (i + 1) - 1] +
+                                      move_regions[2 * (i + 1)]) / 2)) + 1
+
+            trailing_rest_samps = midpoint_idx - move_regions[2 * (i + 1) - 1]
+            if trailing_rest_samps <= rest_length_cap * fs:
+                rep[last_end_idx:midpoint_idx] = cur_rep
+                last_end_idx = midpoint_idx
+                rep_regions[2 * i + 1] = midpoint_idx - 1
+
+            else:
+                rep_end_idx = (move_regions[2 * (i + 1) - 1] +
+                               int(round(rest_length_cap * fs)))
+                rep[last_end_idx:rep_end_idx] = cur_rep
+                last_end_idx = ((move_regions[2 * (i + 1)] -
+                                 int(round(rest_length_cap * fs))))
+                rep_regions[2 * i + 1] = rep_end_idx - 1
+                nb_capped += 2
+
+            cur_rep += 1
+            if cur_rep > nb_unique_reps:
+                cur_rep = 1
+
+        end_idx = int(round((emg.shape[0] + move_regions[-1]) / 2))
+        rep[last_end_idx:end_idx] = cur_rep
+        rep_regions[-2] = last_end_idx
+        rep_regions[-1] = end_idx - 1
+
+    elif db == 2:
+        fs = 2000
+
+        cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E1_A1.mat')
+        data = sio.loadmat(cur_path)
+        emg = np.squeeze(np.array(data['emg']))
+        rep = np.squeeze(np.array(data['rerepetition']))
+        move = np.squeeze(np.array(data['restimulus']))
+
+        cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E2_A1.mat')
+        data = sio.loadmat(cur_path)
+        emg = np.vstack((emg, np.array(data['emg'])))
+        rep = np.append(rep, np.squeeze(np.array(data['rerepetition'])))
+        move_tmp = np.squeeze(np.array(data['restimulus']))
+        move = np.append(move, move_tmp)  # Note no fix needed for this exercise
+
+        cur_path = os.path.normpath(folder_path + '/S' + str(subject) + '_E3_A1.mat')
+        data = sio.loadmat(cur_path)
+        emg = np.vstack((emg, np.array(data['emg'])))
+        data['repetition'][-1] = 0  # Fix for diffing
+        rep = np.append(rep, np.squeeze(np.array(data['repetition'])))
+
+        # Movements number in non-logical pattern [0  1  2  4  6  8  9 16 32 40]
+        # Also note that for last file there is no 'rerepetition or 'restimulus'
+        data['stimulus'][-1] = 0  # Fix for diffing
+        data['stimulus'][np.where(data['stimulus'] == 1)] = 41
+        data['stimulus'][np.where(data['stimulus'] == 2)] = 42
+        data['stimulus'][np.where(data['stimulus'] == 4)] = 43
+        data['stimulus'][np.where(data['stimulus'] == 6)] = 44
+        data['stimulus'][np.where(data['stimulus'] == 8)] = 45
+        data['stimulus'][np.where(data['stimulus'] == 9)] = 46
+        data['stimulus'][np.where(data['stimulus'] == 16)] = 47
+        data['stimulus'][np.where(data['stimulus'] == 32)] = 48
+        data['stimulus'][np.where(data['stimulus'] == 40)] = 49
+        move_tmp = np.squeeze(np.array(data['stimulus']))
+        move = np.append(move, move_tmp)
+
+        move = move.astype('int8')  # To minimise overhead
+
+        # Label repetitions using new block style: rest-move-rest regions
+        move_regions = np.where(np.diff(move))[0]
+        rep_regions = np.zeros((move_regions.shape[0],), dtype=int)
+        nb_reps = int(round(move_regions.shape[0] / 2))
+        last_end_idx = int(round(move_regions[0] / 2))
+        nb_unique_reps = np.unique(rep).shape[0] - 1  # To account for 0 regions
+        nb_capped = 0
+        cur_rep = 1
+
+        rep = np.zeros([rep.shape[0], ], dtype=np.int8)  # Reset rep array
+        for i in range(nb_reps - 1):
+            rep_regions[2 * i] = last_end_idx
+            midpoint_idx = int(round((move_regions[2 * (i + 1) - 1] +
+                                      move_regions[2 * (i + 1)]) / 2)) + 1
+
+            trailing_rest_samps = midpoint_idx - move_regions[2 * (i + 1) - 1]
+            if trailing_rest_samps <= rest_length_cap * fs:
+                rep[last_end_idx:midpoint_idx] = cur_rep
+                last_end_idx = midpoint_idx
+                rep_regions[2 * i + 1] = midpoint_idx - 1
+            else:
+                rep_end_idx = (move_regions[2 * (i + 1) - 1] +
+                               int(round(rest_length_cap * fs)))
+                rep[last_end_idx:rep_end_idx] = cur_rep
+                last_end_idx = ((move_regions[2 * (i + 1)] -
+                                 int(round(rest_length_cap * fs))))
+                rep_regions[2 * i + 1] = rep_end_idx - 1
+                nb_capped += 2
+
+            cur_rep += 1
+            if cur_rep > nb_unique_reps:
+                cur_rep = 1
+
+        end_idx = int(round((emg.shape[0] + move_regions[-1]) / 2))
+        rep[last_end_idx:end_idx] = cur_rep
+        rep_regions[-2] = last_end_idx
+        rep_regions[-1] = end_idx - 1
+    else:
+        raise ValueError('db should be either 1 for database 1 or 2 for database 2')
+
+    return {'emg': emg,
+            'rep': rep,
+            'move': move,
+            'rep_regions': rep_regions,
+            'nb_capped': nb_capped
+            }

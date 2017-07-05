@@ -1,10 +1,10 @@
-"""Utiltiy functions for workign on the NinaPro Databases (1 & 2)."""
+"""Utiltiy functions for working on the NinaPro Databases (1 & 2)."""
 
 from setuptools import setup, find_packages
 
 
 setup(name='nina_helper',
-      version='2.3',
+      version='2.4',
       description='Utiltiy functions for workign on the NinaPro Databases (1 & 2)',
       author='Lif3line',
       author_email='adamhartwell2@gmail.com',
