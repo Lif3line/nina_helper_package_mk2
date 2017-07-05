@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='nina_helper',
-      version='2.2',
+      version='2.3',
       description='Utiltiy functions for workign on the NinaPro Databases (1 & 2)',
       author='Lif3line',
       author_email='adamhartwell2@gmail.com',
