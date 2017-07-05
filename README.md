@@ -24,7 +24,12 @@ Relevant data also included:
 * Weight
 
 ## Usage
-Simplest usage is to download this repository then install as a package via pip
+Simplest usage is to install via pip:
+
+`pip install nina-helper`
+
+
+Otherwise download this repository then install as a local package via pip
 
 ```
 pip install [-e] path/to/repo
