@@ -678,9 +678,10 @@ def get_windows(which_reps, window_len, window_inc, emg, movements, repetitons, 
     R_data = np.zeros([targets.shape[0], ], dtype=np.int8)
     for i, win_end in enumerate(targets):
         win_start = win_end - (window_len - 1)
-        X_data[i, :, :, 0] = emg[win_start:win_end + 1, :]  # Include end
-        Y_data[i] = movements[win_end]
-        R_data[i] = repetitons[win_end]
+        if movements[win_start] == movements[win_end]:
+            X_data[i, :, :, 0] = emg[win_start:win_end + 1, :]  # Include end
+            Y_data[i] = movements[win_end]
+            R_data[i] = repetitons[win_end]
 
     return X_data, Y_data, R_data
 
