@@ -638,7 +638,7 @@ def normalise_emg(emg, reps, train_reps, movements=None, which_moves=None):
     return scaler.transform(emg)
 
 
-def get_windows(which_reps, window_len, window_inc, emg, movements, repetitons, which_moves=None, dtype=np.float32):
+def get_windows(which_reps, window_len, window_inc, emg, movements, repetitons, which_moves=None, get_valid_windows=False, dtype=np.float32):
     """Get set of windows based on repetition and movement criteria and associated label + repetition data.
 
     Args:
@@ -650,6 +650,7 @@ def get_windows(which_reps, window_len, window_inc, emg, movements, repetitons, 
         repetitons (array): Repetition labels
         which_moves (array, optional): Which movements to return - if None use all
         dtype (TYPE, optional): What precision to use for EMG data
+        get_valid_windows (BOOL, optional): option to exclude invalid windows with all zeros
 
     Returns:
         X_data (array): Windowed EMG data
@@ -672,6 +673,7 @@ def get_windows(which_reps, window_len, window_inc, emg, movements, repetitons, 
         move_targets = get_idxs(movements[targets], which_moves)
         targets = targets[move_targets]
 
+    valid_inds = []     # save valid window indices
     X_data = np.zeros([targets.shape[0], window_len, nb_channels, 1],
                       dtype=dtype)
     Y_data = np.zeros([targets.shape[0], ], dtype=np.int8)
@@ -682,6 +684,11 @@ def get_windows(which_reps, window_len, window_inc, emg, movements, repetitons, 
             X_data[i, :, :, 0] = emg[win_start:win_end + 1, :]  # Include end
             Y_data[i] = movements[win_end]
             R_data[i] = repetitons[win_end]
+            valid_inds.append(i)
+    if get_valid_windows:
+        X_data = X_data[valid_inds]
+        Y_data = Y_data[valid_inds]
+        R_data = R_data[valid_inds]
 
     return X_data, Y_data, R_data
 
