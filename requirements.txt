@@ -1,4 +1,4 @@
-setuptools==27.2.0.post20161106
+setuptools==65.5.1
 scipy==0.18.1
 numpy==1.11.3
 scikit_learn==0.18.1
